@@ -3,10 +3,12 @@ import * as bcrypt from 'bcrypt';
 
 import { LoginDto, SignUpDto } from './dto/auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
+import { TokenPayload } from './interfaces/tokenPayload.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
   async SignUp(dto: SignUpDto) {
     const salt = await bcrypt.genSalt(10);
@@ -33,6 +35,19 @@ export class AuthService {
       };
     }
 
-    return user;
+    const payload: TokenPayload = {
+      sub: user.id,
+      username: user.username,
+      email: user.email,
+    };
+
+    const access_token = this.jwtService.sign(payload);
+
+    return {
+      access_token,
+      username: user.username,
+      email: user.email,
+      id: user.id,
+    };
   }
 }
