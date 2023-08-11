@@ -24,12 +24,10 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
       }
 
       case 'P2025': {
-        res
-          .status(HttpStatus.NOT_FOUND)
-          .json({
-            message: 'Invalid Credenitials',
-            statusCode: HttpStatus.NOT_FOUND,
-          });
+        res.status(HttpStatus.NOT_FOUND).json({
+          message: 'Invalid Credenitials',
+          statusCode: HttpStatus.NOT_FOUND,
+        });
         break;
       }
 
