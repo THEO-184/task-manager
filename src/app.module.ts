@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ProfileModule } from './profile/profile.module';
       signOptions: { expiresIn: '5h' },
     }),
     ProfileModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],
