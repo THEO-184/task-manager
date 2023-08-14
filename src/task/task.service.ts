@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreatTaskDto, UpdateTaskDto } from './dto/task.dto';
+import {
+  CreatTaskDto,
+  IQueryList,
+  QueryListDto,
+  UpdateTaskDto,
+} from './dto/task.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -18,10 +23,21 @@ export class TaskService {
     return { message: 'Task created Successfully' };
   }
 
-  async getUserTasks(userId: string) {
+  async getUserTasks(userId: string, query: QueryListDto) {
+    const queryObj: Partial<IQueryList> = {};
+    if (query.category) {
+      queryObj.category = query.category;
+    }
+    if (query.status) {
+      queryObj.status = query.status;
+    }
+
+    console.log({ queryObj });
+
     const tasks = await this.prisma.task.findMany({
       where: {
         userId,
+        ...queryObj,
       },
       include: {
         user: {
@@ -48,6 +64,6 @@ export class TaskService {
       },
     });
 
-    return { message: 'task updated successfully', task };
+    return { message: 'task updated successfully' };
   }
 }

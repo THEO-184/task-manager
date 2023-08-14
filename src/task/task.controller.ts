@@ -5,10 +5,11 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/guard/guard.guard';
-import { CreatTaskDto, UpdateTaskDto } from './dto/task.dto';
+import { CreatTaskDto, QueryListDto, UpdateTaskDto } from './dto/task.dto';
 import { TaskService } from './task.service';
 import { GetUser } from 'src/profile/decorators/getUser.decorator';
 
@@ -18,8 +19,8 @@ export class TaskController {
   constructor(private taskService: TaskService) {}
 
   @Get()
-  getUserTasks(@GetUser('sub') userId: string) {
-    return this.taskService.getUserTasks(userId);
+  getUserTasks(@GetUser('sub') userId: string, @Query() query: QueryListDto) {
+    return this.taskService.getUserTasks(userId, query);
   }
 
   @Put(':id')
