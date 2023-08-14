@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from 'src/auth/guard/guard.guard';
-import { CreatTaskDto } from './dto/task.dto';
+import { CreatTaskDto, UpdateTaskDto } from './dto/task.dto';
 import { TaskService } from './task.service';
 import { GetUser } from 'src/profile/decorators/getUser.decorator';
 
@@ -12,6 +20,15 @@ export class TaskController {
   @Get()
   getUserTasks(@GetUser('sub') userId: string) {
     return this.taskService.getUserTasks(userId);
+  }
+
+  @Put(':id')
+  updateTask(
+    @GetUser('sub') userId: string,
+    @Param('id') taskId: string,
+    @Body() dto: UpdateTaskDto,
+  ) {
+    return this.taskService.updateTask(dto, taskId, userId);
   }
 
   @Post()

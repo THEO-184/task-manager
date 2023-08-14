@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/mapped-types';
 import {
   IsEnum,
   IsNotEmpty,
@@ -34,3 +35,5 @@ export class CreatTaskDto {
   @IsEnum(TaskCategory, { message: 'Invalid category type' })
   category: 'work' | 'personal' | 'shopping';
 }
+
+export class UpdateTaskDto extends PartialType(CreatTaskDto) {}
