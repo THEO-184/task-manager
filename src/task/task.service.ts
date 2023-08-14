@@ -17,4 +17,23 @@ export class TaskService {
     });
     return { message: 'Task created Successfully' };
   }
+
+  async getUserTasks(userId: string) {
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        user: {
+          select: {
+            email: true,
+            id: true,
+            username: true,
+          },
+        },
+      },
+    });
+
+    return { count: tasks.length, data: tasks };
+  }
 }
