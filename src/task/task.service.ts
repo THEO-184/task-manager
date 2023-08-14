@@ -32,12 +32,13 @@ export class TaskService {
       queryObj.status = query.status;
     }
 
-    console.log({ queryObj });
-
     const tasks = await this.prisma.task.findMany({
       where: {
         userId,
         ...queryObj,
+      },
+      orderBy: {
+        updatedAt: 'desc',
       },
       include: {
         user: {
@@ -54,7 +55,7 @@ export class TaskService {
   }
 
   async updateTask(dto: UpdateTaskDto, taskId: string, userId: string) {
-    const task = await this.prisma.task.update({
+    await this.prisma.task.update({
       where: {
         id: taskId,
         userId,
@@ -65,5 +66,16 @@ export class TaskService {
     });
 
     return { message: 'task updated successfully' };
+  }
+
+  async deleteTask(taskId: string, userId: string) {
+    await this.prisma.task.delete({
+      where: {
+        id: taskId,
+        userId,
+      },
+    });
+
+    return { message: 'task deleted successfully' };
   }
 }
