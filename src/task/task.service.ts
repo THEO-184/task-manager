@@ -31,6 +31,9 @@ export class TaskService {
     if (query.status) {
       queryObj.status = query.status;
     }
+    if (query.priority) {
+      queryObj.priority = query.priority;
+    }
 
     const tasks = await this.prisma.task.findMany({
       where: {

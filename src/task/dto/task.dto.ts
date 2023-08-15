@@ -6,17 +6,23 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { type } from 'os';
 
 enum TaskStatus {
-  complete,
   incomplete,
+  progress,
+  complete,
 }
 
 enum TaskCategory {
   work,
   personal,
   shopping,
+}
+
+enum TaskPriority {
+  high,
+  medium,
+  low,
 }
 
 export class CreatTaskDto {
@@ -31,10 +37,13 @@ export class CreatTaskDto {
 
   @IsEnum(TaskStatus, { message: 'Invalid status type' })
   @IsOptional()
-  status?: 'complete' | 'incomplete';
+  status?: StatusType;
 
   @IsEnum(TaskCategory, { message: 'Invalid category type' })
-  category: 'work' | 'personal' | 'shopping';
+  category: CategoryType;
+
+  @IsEnum(TaskPriority, { message: 'Invalid priority type' })
+  priority: PriorityTpe;
 }
 
 export class UpdateTaskDto extends PartialType(CreatTaskDto) {}
@@ -47,12 +56,18 @@ export class QueryListDto {
   @IsEnum(TaskCategory, { message: 'Invalid category type' })
   @IsOptional()
   category: CategoryType;
+
+  @IsEnum(TaskPriority, { message: 'Invalid priority type' })
+  @IsOptional()
+  priority: PriorityTpe;
 }
 
-export type StatusType = 'complete' | 'incomplete';
+export type StatusType = 'complete' | 'incomplete' | 'progress';
 export type CategoryType = 'work' | 'personal' | 'shopping';
-export type QueryKeys = 'status' | 'category';
+export type PriorityTpe = 'low' | 'medium' | 'high';
+export type QueryKeys = 'status' | 'category' | 'priority';
 export interface IQueryList {
   status: StatusType;
   category: CategoryType;
+  priority: PriorityTpe;
 }
