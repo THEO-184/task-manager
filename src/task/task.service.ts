@@ -15,6 +15,7 @@ export class TaskService {
     const task = await this.prisma.task.create({
       data: {
         ...dto,
+
         user: {
           connect: { id: userId },
         },

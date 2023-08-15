@@ -1,5 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { Transform } from 'class-transformer';
 import {
+  IsDate,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -35,6 +37,11 @@ export class CreatTaskDto {
   @IsNotEmpty()
   description: string;
 
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  @IsNotEmpty()
+  due_date: Date;
+
   @IsEnum(TaskStatus, { message: 'Invalid status type' })
   @IsOptional()
   status?: StatusType;
@@ -43,6 +50,7 @@ export class CreatTaskDto {
   category: CategoryType;
 
   @IsEnum(TaskPriority, { message: 'Invalid priority type' })
+  @IsOptional()
   priority: PriorityTpe;
 }
 
