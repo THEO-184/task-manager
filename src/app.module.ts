@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -20,6 +21,15 @@ import { TaskModule } from './task/task.module';
       global: true,
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '5h' },
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.ethereal.email',
+        auth: {
+          user: 'alejandra9@ethereal.email',
+          pass: 'gkRfc5za65jTNqf2Vm',
+        },
+      },
     }),
     ProfileModule,
     TaskModule,

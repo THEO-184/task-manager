@@ -6,10 +6,15 @@ import {
   UpdateTaskDto,
 } from './dto/task.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { EMailService } from 'src/mail/mail.service';
+import { EMailPayload } from 'src/mail/interfaces/mail.interfaces';
 
 @Injectable()
 export class TaskService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EMailService,
+  ) {}
 
   async createTask(dto: CreatTaskDto, userId: never) {
     const task = await this.prisma.task.create({
@@ -55,6 +60,13 @@ export class TaskService {
       },
     });
 
+    await this.emailService.sendMail({
+      to: 'vada21@ethereal.email',
+      text: 'Welcome',
+      subject: 'Your Task is due',
+      html: '<b>Hello Dear User, Your task is due</b>',
+    });
+
     return { count: tasks.length, data: tasks };
   }
 
@@ -81,5 +93,14 @@ export class TaskService {
     });
 
     return { message: 'task deleted successfully' };
+  }
+
+  async sendMail(payload: EMailPayload) {
+    await this.emailService.sendMail({
+      to: 'vada21@ethereal.email',
+      text: 'Welcome',
+      subject: 'Your Task is due',
+      html: '<b>Hello Dear User, Your task is due</b>',
+    });
   }
 }
