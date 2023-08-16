@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { CreatTaskDto, QueryListDto, UpdateTaskDto } from './dto/task.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { EMailService } from 'src/mail/mail.service';
@@ -61,6 +61,35 @@ export class TaskService {
   }
 
   async updateTask(dto: UpdateTaskDto, taskId: string, userId: string) {
+    // STATUS UPDATE VALIDATION
+    if (dto.status && dto.status === 'progress') {
+      const noOfTasksInProgress = await this.prisma.task.count({
+        where: {
+          userId,
+          status: dto.status,
+        },
+      });
+
+      if (noOfTasksInProgress >= 1) {
+        throw new NotImplementedException(
+          'A different task is already in progress',
+        );
+      }
+    }
+
+    if (dto.status && dto.status === 'complete') {
+      const task = await this.prisma.task.findUniqueOrThrow({
+        where: {
+          id: taskId,
+          userId,
+        },
+      });
+
+      if (task.status !== 'progress') {
+        throw new NotImplementedException('task is not already in progress');
+      }
+    }
+
     await this.prisma.task.update({
       where: {
         id: taskId,
@@ -107,6 +136,9 @@ export class TaskService {
     const oneDay = new Date(new Date().getTime() + ONE_DAY_IN_MILLISECS);
     const tasks = await this.prisma.task.findMany({
       where: {
+        status: {
+          in: ['incomplete', 'progress'],
+        },
         due_date: {
           lte: oneDay,
         },
