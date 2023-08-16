@@ -1,4 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { TaskStatus, TaskCategory, TaskPriority } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import {
   IsDate,
@@ -8,24 +9,11 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-
-enum TaskStatus {
-  incomplete,
-  progress,
-  complete,
-}
-
-enum TaskCategory {
-  work,
-  personal,
-  shopping,
-}
-
-enum TaskPriority {
-  high,
-  medium,
-  low,
-}
+import {
+  StatusType,
+  CategoryType,
+  PriorityTpe,
+} from '../interfaces/task.interfaces';
 
 export class CreatTaskDto {
   @IsString()
@@ -67,15 +55,5 @@ export class QueryListDto {
 
   @IsEnum(TaskPriority, { message: 'Invalid priority type' })
   @IsOptional()
-  priority: PriorityTpe;
-}
-
-export type StatusType = 'complete' | 'incomplete' | 'progress';
-export type CategoryType = 'work' | 'personal' | 'shopping';
-export type PriorityTpe = 'low' | 'medium' | 'high';
-export type QueryKeys = 'status' | 'category' | 'priority';
-export interface IQueryList {
-  status: StatusType;
-  category: CategoryType;
   priority: PriorityTpe;
 }
