@@ -6,11 +6,6 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('test')
-  test() {
-    return 'test';
-  }
-
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.Login(dto);

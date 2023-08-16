@@ -1,5 +1,10 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { CreatTaskDto, QueryListDto, UpdateTaskDto } from './dto/task.dto';
+import {
+  AddCollaboratorDto,
+  CreatTaskDto,
+  QueryListDto,
+  UpdateTaskDto,
+} from './dto/task.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { EMailService } from 'src/mail/mail.service';
 import { EMailPayload } from 'src/mail/interfaces/mail.interfaces';
@@ -20,6 +25,9 @@ export class TaskService {
 
         user: {
           connect: { id: userId },
+        },
+        collaborators: {
+          connect: [{ id: userId }],
         },
       },
     });
@@ -48,6 +56,18 @@ export class TaskService {
       },
       include: {
         user: {
+          select: {
+            email: true,
+            id: true,
+            username: true,
+          },
+        },
+        collaborators: {
+          where: {
+            id: {
+              not: userId,
+            },
+          },
           select: {
             email: true,
             id: true,
@@ -86,7 +106,7 @@ export class TaskService {
       });
 
       if (task.status !== 'progress') {
-        throw new NotImplementedException('task is not already in progress');
+        throw new NotImplementedException('task is not in progress');
       }
     }
 
@@ -128,6 +148,10 @@ export class TaskService {
       subject: 'Your Task is due',
       html: `<b>${message}</b>`,
     });
+  }
+
+  async assignCollaborator(taskId: string, collaborators: AddCollaboratorDto) {
+    return { collaborators, taskId };
   }
 
   @Cron('0 * * * *')

@@ -1,7 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { OmitType, PartialType, PickType } from '@nestjs/mapped-types';
 import { TaskStatus, TaskCategory, TaskPriority } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import {
+  ArrayMinSize,
+  ArrayNotEmpty,
   IsDate,
   IsEnum,
   IsNotEmpty,
@@ -40,9 +42,21 @@ export class CreatTaskDto {
   @IsEnum(TaskPriority, { message: 'Invalid priority type' })
   @IsOptional()
   priority: PriorityTpe;
+
+  @IsString({ each: true })
+  @ArrayNotEmpty()
+  @ArrayMinSize(1)
+  @IsOptional()
+  collaborators?: string[];
 }
 
-export class UpdateTaskDto extends PartialType(CreatTaskDto) {}
+export class UpdateTaskDto extends PartialType(
+  OmitType(CreatTaskDto, ['collaborators']),
+) {}
+
+export class AddCollaboratorDto extends PickType(CreatTaskDto, [
+  'collaborators',
+]) {}
 
 export class QueryListDto {
   @IsEnum(TaskStatus, { message: 'Invalid status type' })
