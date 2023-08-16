@@ -29,4 +29,20 @@ export class ProfileService {
     delete user.password;
     return user;
   }
+
+  async getAllUsers() {
+    const users = await this.prisma.user.findMany({
+      select: {
+        email: true,
+        id: true,
+        username: true,
+        _count: {
+          select: {
+            tasks: true,
+          },
+        },
+      },
+    });
+    return { count: users.length, data: users };
+  }
 }

@@ -16,6 +16,11 @@ export class ProfileController {
     return this.profileService.getProfile(id);
   }
 
+  @Get('users')
+  getAllUsers() {
+    return this.profileService.getAllUsers();
+  }
+
   @Put()
   updateProfile(@Body() dto: UpdateProfileDto, @GetUser('sub') id: string) {
     return this.profileService.updateProfile(dto, id);
