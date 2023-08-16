@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CreatTaskDto,
-  IQueryList,
-  QueryListDto,
-  UpdateTaskDto,
-} from './dto/task.dto';
+import { CreatTaskDto, QueryListDto, UpdateTaskDto } from './dto/task.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { EMailService } from 'src/mail/mail.service';
 import { EMailPayload } from 'src/mail/interfaces/mail.interfaces';
+import { IQueryList, TaskMailPayload } from './interfaces/task.interfaces';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class TaskService {
@@ -60,13 +57,6 @@ export class TaskService {
       },
     });
 
-    await this.emailService.sendMail({
-      to: 'vada21@ethereal.email',
-      text: 'Welcome',
-      subject: 'Your Task is due',
-      html: '<b>Hello Dear User, Your task is due</b>',
-    });
-
     return { count: tasks.length, data: tasks };
   }
 
@@ -95,12 +85,44 @@ export class TaskService {
     return { message: 'task deleted successfully' };
   }
 
-  async sendMail(payload: EMailPayload) {
+  async sendMail(payload: TaskMailPayload) {
+    const message = `
+      Hello ${payload.username},
+      Your Task <mark>${payload.task_name}</mark> is due on <mark>${payload.due_date}</mark>.
+      Kindly complete it before the due date else it will expire.
+      Thank You.
+
+      TheoTM App.
+    `;
     await this.emailService.sendMail({
-      to: 'vada21@ethereal.email',
-      text: 'Welcome',
+      to: payload.email,
       subject: 'Your Task is due',
-      html: '<b>Hello Dear User, Your task is due</b>',
+      html: `<b>${message}</b>`,
     });
+  }
+
+  @Cron('0 * * * *')
+  async sendDueDateNotifications() {
+    const ONE_DAY_IN_MILLISECS = 60 * 60 * 24 * 1000;
+    const oneDay = new Date(new Date().getTime() + ONE_DAY_IN_MILLISECS);
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        due_date: {
+          lte: oneDay,
+        },
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    for (const task of tasks) {
+      await this.sendMail({
+        due_date: task.due_date,
+        email: 'alejandra9@ethereal.email',
+        task_name: task.title,
+        username: task.user.username,
+      });
+    }
   }
 }
