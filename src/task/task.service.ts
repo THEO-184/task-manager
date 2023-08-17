@@ -80,6 +80,40 @@ export class TaskService {
     return { count: tasks.length, data: tasks };
   }
 
+  async assignCollaborator(
+    taskId: string,
+    userId: string,
+    dto: AddCollaboratorDto,
+  ) {
+    const collaborators = dto.collaborators.map((id) => ({ id }));
+
+    const task = await this.prisma.task.update({
+      where: {
+        id: taskId,
+        userId,
+      },
+      data: {
+        user: {
+          connect: { id: userId },
+        },
+        collaborators: {
+          connect: [...collaborators],
+        },
+      },
+      include: {
+        collaborators: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+          },
+        },
+      },
+    });
+
+    return { message: 'Collaborator added successfully' };
+  }
+
   async updateTask(dto: UpdateTaskDto, taskId: string, userId: string) {
     // STATUS UPDATE VALIDATION
     if (dto.status && dto.status === 'progress') {
@@ -148,10 +182,6 @@ export class TaskService {
       subject: 'Your Task is due',
       html: `<b>${message}</b>`,
     });
-  }
-
-  async assignCollaborator(taskId: string, collaborators: AddCollaboratorDto) {
-    return { collaborators, taskId };
   }
 
   @Cron('0 * * * *')

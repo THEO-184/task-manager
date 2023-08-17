@@ -29,21 +29,25 @@ export class TaskController {
     return this.taskService.getUserTasks(userId, query);
   }
 
-  @Put(':id/assign_collaborator')
-  assignCollaborator(
-    @Param('id') taskId: string,
-    @Body() collaborators: AddCollaboratorDto,
-  ) {
-    return this.taskService.assignCollaborator(taskId, collaborators);
-  }
-
   @Put(':id')
   updateTask(
     @GetUser('sub') userId: string,
     @Param('id') taskId: string,
     @Body() dto: UpdateTaskDto,
   ) {
+    console.log('triggered');
+
     return this.taskService.updateTask(dto, taskId, userId);
+  }
+
+  @Put(':id/assign_collaborator')
+  assignCollaborator(
+    @GetUser('sub') userId: string,
+    @Param('id') taskId: string,
+    @Body() dto: AddCollaboratorDto,
+  ) {
+    console.log('triggered assign');
+    return this.taskService.assignCollaborator(taskId, userId, dto);
   }
 
   @Delete(':id')
