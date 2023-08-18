@@ -24,9 +24,9 @@ import { GetUser } from 'src/profile/decorators/getUser.decorator';
 export class TaskController {
   constructor(private taskService: TaskService) {}
 
-  @Get()
-  getUserTasks(@GetUser('sub') userId: string, @Query() query: QueryListDto) {
-    return this.taskService.getUserTasks(userId, query);
+  @Get('me')
+  getMyTask(@GetUser('sub') userId: string, @Query() query: QueryListDto) {
+    return this.taskService.getMyTasks(userId, query);
   }
 
   @Put(':id')

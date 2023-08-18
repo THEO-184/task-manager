@@ -16,6 +16,39 @@ export class ProfileService {
     return user;
   }
 
+  async getAssignedTasks(userId: string) {
+    const tasks = await this.prisma.user.findUniqueOrThrow({
+      where: {
+        id: userId,
+      },
+      select: {
+        assignedTasks: {
+          where: {
+            userId: {
+              not: userId,
+            },
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            assignedTasks: true,
+          },
+        },
+      },
+    });
+
+    return tasks;
+  }
+
   async updateProfile(dto: UpdateProfileDto, id: string) {
     const user = await this.prisma.user.update({
       where: {

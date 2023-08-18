@@ -34,7 +34,7 @@ export class TaskService {
     return { message: 'Task created Successfully' };
   }
 
-  async getUserTasks(userId: string, query: QueryListDto) {
+  async getMyTasks(userId: string, query: QueryListDto) {
     const queryObj: Partial<IQueryList> = {};
     if (query.category) {
       queryObj.category = query.category;
@@ -62,6 +62,7 @@ export class TaskService {
             username: true,
           },
         },
+
         collaborators: {
           where: {
             id: {
@@ -85,6 +86,7 @@ export class TaskService {
     userId: string,
     dto: AddCollaboratorDto,
   ) {
+    console.log(userId);
     const collaborators = dto.collaborators.map((id) => ({ id }));
 
     const task = await this.prisma.task.update({

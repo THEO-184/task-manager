@@ -20,6 +20,10 @@ export class ProfileController {
   getAllUsers() {
     return this.profileService.getAllUsers();
   }
+  @Get('assigned_tasks')
+  getAssignedTasks(@GetUser('sub') id: string) {
+    return this.profileService.getAssignedTasks(id);
+  }
 
   @Put()
   updateProfile(@Body() dto: UpdateProfileDto, @GetUser('sub') id: string) {

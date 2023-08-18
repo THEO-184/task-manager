@@ -31,6 +31,15 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
         break;
       }
 
+      case 'P2016': {
+        const status = HttpStatus.NOT_IMPLEMENTED;
+        const message = exception.message;
+        res.status(status).json({
+          statusCode: status,
+          message: 'wrong ID',
+        });
+      }
+
       default:
         super.catch(exception, host);
         break;
