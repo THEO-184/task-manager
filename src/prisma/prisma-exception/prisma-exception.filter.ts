@@ -6,7 +6,7 @@ import { Response } from 'express';
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilter extends BaseExceptionFilter {
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
-    console.log('error message', exception);
+    console.log('error message', exception.message);
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
 
@@ -25,7 +25,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
 
       case 'P2025': {
         res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Invalid Credenitials',
+          message: exception.message,
           statusCode: HttpStatus.NOT_FOUND,
         });
         break;

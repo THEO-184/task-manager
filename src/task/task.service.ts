@@ -118,10 +118,31 @@ export class TaskService {
 
   async updateTask(dto: UpdateTaskDto, taskId: string, userId: string) {
     // STATUS UPDATE VALIDATION
+
+    // check if user is eligible to update the specific task
+    await this.prisma.task.findFirstOrThrow({
+      where: {
+        id: taskId,
+        collaborators: {
+          some: {
+            id: userId,
+          },
+        },
+      },
+      include: {
+        collaborators: true,
+      },
+    });
+
     if (dto.status && dto.status === 'progress') {
       const noOfTasksInProgress = await this.prisma.task.count({
         where: {
-          userId,
+          id: taskId,
+          collaborators: {
+            some: {
+              id: userId,
+            },
+          },
           status: dto.status,
         },
       });
@@ -137,7 +158,11 @@ export class TaskService {
       const task = await this.prisma.task.findUniqueOrThrow({
         where: {
           id: taskId,
-          userId,
+          collaborators: {
+            some: {
+              id: userId,
+            },
+          },
         },
       });
 
@@ -149,7 +174,11 @@ export class TaskService {
     await this.prisma.task.update({
       where: {
         id: taskId,
-        userId,
+        collaborators: {
+          some: {
+            id: userId,
+          },
+        },
       },
       data: {
         ...dto,
