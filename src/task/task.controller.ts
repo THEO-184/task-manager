@@ -1,3 +1,5 @@
+import { Express } from 'express';
+
 import {
   Body,
   Controller,
@@ -7,7 +9,9 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/guard/guard.guard';
 import {
@@ -18,6 +22,7 @@ import {
 } from './dto/task.dto';
 import { TaskService } from './task.service';
 import { GetUser } from 'src/profile/decorators/getUser.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(AuthGuard)
 @Controller('task')
@@ -56,7 +61,13 @@ export class TaskController {
   }
 
   @Post()
-  createTast(@Body() dto: CreatTaskDto, @GetUser('sub') id: never) {
-    return this.taskService.createTask(dto, id);
+  @UseInterceptors(FileInterceptor('file'))
+  createTast(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() dto: CreatTaskDto,
+    @GetUser('sub') id: never,
+  ) {
+    console.log({ file, dto });
+    // return this.taskService.createTask(dto, id);
   }
 }
